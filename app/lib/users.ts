@@ -2,13 +2,18 @@ export type Role = 'admin' | 'manager1' | 'manager2' | 'master';
 
 export type User = {
   login: string;
+  password: string;
   role: Role;
 };
 
 const STORAGE_KEY = 'users';
 
 const defaultUsers: User[] = [
-  { login: 'Lika', role: 'admin' },
+  {
+    login: 'Lika',
+    password: 'Lomka',
+    role: 'admin',
+  },
 ];
 
 export function getUsers(): User[] {
