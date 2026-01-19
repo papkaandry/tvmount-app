@@ -3,6 +3,27 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+/* ================= USERS (TEMP, later backend) ================= */
+
+const USERS = {
+  Lika: {
+    password: 'Lomka',
+    role: 'admin',
+  },
+  manager1: {
+    password: '1234',
+    role: 'manager',
+  },
+  master1: {
+    password: '1234',
+    role: 'master',
+  },
+} as const;
+
+type UserKey = keyof typeof USERS;
+
+/* ================= COMPONENT ================= */
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -38,9 +59,12 @@ export default function LoginPage() {
   const t = texts[lang];
 
   const handleLogin = () => {
-    if (login === 'Lika' && password === 'Lomka') {
-      localStorage.setItem('role', 'admin');
+    const userKey = login as UserKey;
+    const user = USERS[userKey];
+
+    if (user && user.password === password) {
       localStorage.setItem('user', login);
+      localStorage.setItem('role', user.role);
       router.push('/');
       return;
     }
