@@ -20,7 +20,7 @@ export default function AdminPanel() {
     ];
 
     setUsers(updatedUsers);
-    saveUsers(updatedUsers); // ← 🔴 ВОТ ЭТОГО НЕ ХВАТАЛО
+    saveUsers(updatedUsers);
 
     setLogin('');
     setPassword('');
@@ -31,7 +31,6 @@ export default function AdminPanel() {
     <div style={styles.adminBox}>
       <h3>Admin panel — Users</h3>
 
-      {/* USERS LIST */}
       <table style={styles.table}>
         <thead>
           <tr>
@@ -51,7 +50,6 @@ export default function AdminPanel() {
         </tbody>
       </table>
 
-      {/* ADD USER */}
       <div style={styles.form}>
         <input
           placeholder="Login"
@@ -79,3 +77,21 @@ export default function AdminPanel() {
     </div>
   );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+  adminBox: {
+    padding: 20,
+    background: '#ffe5e5',
+    borderRadius: 10,
+    border: '1px solid #b00020',
+  },
+  table: {
+    width: '100%',
+    marginBottom: 16,
+    borderCollapse: 'collapse',
+  },
+  form: {
+    display: 'flex',
+    gap: 8,
+  },
+};
