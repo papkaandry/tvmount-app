@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminPanel from './components/AdminPanel';
 
 type Role = 'admin' | 'manager1' | 'manager2' | 'master';
 
@@ -106,24 +107,6 @@ export default function HomePage() {
   );
 }
 
-/* ================= ADMIN PANEL ================= */
-
-function AdminPanel() {
-  return (
-    <div style={styles.adminBox}>
-      <h3>Admin panel</h3>
-      <p>Only admin can see this section</p>
-
-      <ul>
-        <li>Manage users</li>
-        <li>Assign roles</li>
-        <li>Access permissions</li>
-        <li>System settings</li>
-      </ul>
-    </div>
-  );
-}
-
 /* ================= STYLES ================= */
 
 const styles: Record<string, React.CSSProperties> = {
@@ -192,13 +175,5 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#fff',
     borderRadius: 10,
     boxShadow: '0 6px 18px rgba(0,0,0,0.1)',
-  },
-
-  adminBox: {
-    padding: 20,
-    borderRadius: 10,
-    background: '#ffe5e5',
-    border: '1px solid #b00020',
-    color: '#660000',
   },
 };
