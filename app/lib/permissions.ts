@@ -1,16 +1,8 @@
-export const permissions = {
-  admin: {
-    accessSettings: true,
-  },
-  manager1: {
-    accessSettings: false,
-  },
-  manager2: {
-    accessSettings: false,
-  },
-  master: {
-    accessSettings: false,
-  },
-};
+import { Role } from './users';
 
-export type Role = keyof typeof permissions;
+export const permissions: Record<Role, { accessSettings: boolean }> = {
+  admin: { accessSettings: true },
+  manager1: { accessSettings: false },
+  manager2: { accessSettings: false },
+  master: { accessSettings: false },
+};
