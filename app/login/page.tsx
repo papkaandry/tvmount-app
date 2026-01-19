@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUsers } from '@/app/lib/users';
+import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // 🔥 КЛЮЧЕВОЕ МЕСТО — ИНИЦИАЛИЗАЦИЯ USERS
+  useEffect(() => {
+    initUsersIfNeeded();
+  }, []);
 
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -54,3 +59,33 @@ export default function LoginPage() {
     </div>
   );
 }
+
+/* ================= STYLES ================= */
+
+const styles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: '100vh',
+    background: '#e6e6e6',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontFamily: 'Arial, sans-serif',
+  },
+
+  card: {
+    width: 320,
+    background: '#ffffff',
+    padding: 24,
+    borderRadius: 14,
+    boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+  },
+
+  error: {
+    color: '#c62828',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+};
