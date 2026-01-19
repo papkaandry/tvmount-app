@@ -8,43 +8,37 @@ export type User = {
 
 const STORAGE_KEY = 'users';
 
-/* ===== DEFAULT USERS ===== */
-const defaultUsers: User[] = [
-  {
-    login: 'Lika',
-    password: 'Lomka',
-    role: 'admin',
-  },
-];
-
-/* ===== GET USERS ===== */
+/* ================= GET USERS ================= */
 export function getUsers(): User[] {
   if (typeof window === 'undefined') return [];
 
-  const data = localStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return [];
 
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUsers));
-    return defaultUsers;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return [];
   }
-
-  return JSON.parse(data);
 }
 
-/* ===== SAVE USERS ===== */
+/* ================= SAVE USERS ================= */
 export function saveUsers(users: User[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
 }
 
-/* ===== AUTH ===== */
-export function authenticate(
-  login: string,
-  password: string
-): User | null {
+/* ================= INIT ADMIN (ONCE) ================= */
+export function initAdminIfNeeded() {
+  if (typeof window === 'undefined') return;
+
   const users = getUsers();
-  return (
-    users.find(
-      (u) => u.login === login && u.password === password
-    ) || null
-  );
+  if (users.length > 0) return;
+
+  const admin: User = {
+    login: 'Lika',
+    password: 'Lomka',
+    role: 'admin',
+  };
+
+  saveUsers([admin]);
 }
