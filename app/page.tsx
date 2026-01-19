@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+type Role = 'admin' | 'manager1' | 'manager2' | 'master';
+
 const tabs = [
   'Dashboard',
   'Orders',
@@ -18,12 +20,12 @@ const tabs = [
 
 export default function HomePage() {
   const router = useRouter();
-  const [role, setRole] = useState<string | null>(null);
+  const [role, setRole] = useState<Role | null>(null);
   const [user, setUser] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState<string>('Dashboard');
 
   useEffect(() => {
-    const storedRole = localStorage.getItem('role');
+    const storedRole = localStorage.getItem('role') as Role | null;
     const storedUser = localStorage.getItem('user');
 
     if (!storedRole || !storedUser) {
@@ -47,7 +49,7 @@ export default function HomePage() {
       {/* Top bar */}
       <div style={styles.topBar}>
         <div>
-          <strong>User:</strong> {user} <br />
+          <strong>User:</strong> {user}<br />
           <strong>Role:</strong> {role}
         </div>
 
@@ -60,24 +62,28 @@ export default function HomePage() {
 
       {/* Tabs */}
       <div style={styles.tabs}>
-        {tabs.map((tab, index) => (
+        {tabs.map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(index)}
+            onClick={() => setActiveTab(tab)}
             style={{
               ...styles.tab,
-              ...(activeTab === index ? styles.tabActive : {}),
+              ...(activeTab === tab ? styles.tabActive : {}),
             }}
           >
             {tab}
           </button>
         ))}
 
-        {/* 🔴 ADMIN TAB — ТОЛЬКО КНОПКА */}
+        {/* 🔴 ADMIN TAB */}
         {role === 'admin' && (
           <button
-            onClick={() => router.push('/admin')}
-            style={{ ...styles.tab, ...styles.adminTab }}
+            onClick={() => setActiveTab('Admin')}
+            style={{
+              ...styles.tab,
+              ...styles.adminTab,
+              ...(activeTab === 'Admin' ? styles.adminTabActive : {}),
+            }}
           >
             ⚠ Admin panel
           </button>
@@ -86,8 +92,34 @@ export default function HomePage() {
 
       {/* Content */}
       <div style={styles.content}>
-        <strong>Active tab:</strong> {tabs[activeTab]}
+        {activeTab !== 'Admin' && (
+          <>
+            <strong>Active tab:</strong> {activeTab}
+          </>
+        )}
+
+        {activeTab === 'Admin' && role === 'admin' && (
+          <AdminPanel />
+        )}
       </div>
+    </div>
+  );
+}
+
+/* ================= ADMIN PANEL ================= */
+
+function AdminPanel() {
+  return (
+    <div style={styles.adminBox}>
+      <h3>Admin panel</h3>
+      <p>Only admin can see this section</p>
+
+      <ul>
+        <li>Manage users</li>
+        <li>Assign roles</li>
+        <li>Access permissions</li>
+        <li>System settings</li>
+      </ul>
     </div>
   );
 }
@@ -150,10 +182,23 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
   },
 
+  adminTabActive: {
+    background: '#b00020',
+    color: '#fff',
+  },
+
   content: {
     padding: 20,
     background: '#fff',
     borderRadius: 10,
     boxShadow: '0 6px 18px rgba(0,0,0,0.1)',
+  },
+
+  adminBox: {
+    padding: 20,
+    borderRadius: 10,
+    background: '#ffe5e5',
+    border: '1px solid #b00020',
+    color: '#660000',
   },
 };
