@@ -27,18 +27,18 @@ export function saveUsers(users: User[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
 }
 
-/* ================= INIT ADMIN (ONCE) ================= */
-export function initAdminIfNeeded() {
+/* ================= INIT USERS (ONCE) ================= */
+export function initUsersIfNeeded() {
   if (typeof window === 'undefined') return;
 
   const users = getUsers();
   if (users.length > 0) return;
 
-  const admin: User = {
-    login: 'Lika',
-    password: 'Lomka',
-    role: 'admin',
-  };
-
-  saveUsers([admin]);
+  saveUsers([
+    {
+      login: 'Lika',
+      password: 'Lomka',
+      role: 'admin',
+    },
+  ]);
 }
