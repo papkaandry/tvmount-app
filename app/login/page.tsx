@@ -3,28 +3,42 @@
 import { useState } from 'react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [lang, setLang] = useState<'ru' | 'ua' | 'en'>('ua');
+  const [lang, setLang] = useState<'ru' | 'ua' | 'en'>('ru');
 
   const texts = {
-    ru: { title: 'Вход', email: 'Email', password: 'Пароль', button: 'Войти' },
-    ua: { title: 'Вхід', email: 'Email', password: 'Пароль', button: 'Увійти' },
-    en: { title: 'Login', email: 'Email', password: 'Password', button: 'Sign in' },
+    ru: {
+      title: 'Вход',
+      email: 'Email',
+      password: 'Пароль',
+      button: 'Войти',
+    },
+    ua: {
+      title: 'Вхід',
+      email: 'Email',
+      password: 'Пароль',
+      button: 'Увійти',
+    },
+    en: {
+      title: 'Login',
+      email: 'Email',
+      password: 'Password',
+      button: 'Sign in',
+    },
   };
 
   const t = texts[lang];
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.lang}>
+    <div style={styles.page}>
+      {/* Language switcher */}
+      <div style={styles.langSwitcher}>
         {(['ru', 'ua', 'en'] as const).map((l) => (
           <button
             key={l}
             onClick={() => setLang(l)}
             style={{
-              ...styles.langBtn,
-              ...(lang === l ? styles.langBtnActive : {}),
+              ...styles.langButton,
+              ...(lang === l ? styles.langButtonActive : {}),
             }}
           >
             {l.toUpperCase()}
@@ -32,23 +46,20 @@ export default function LoginPage() {
         ))}
       </div>
 
+      {/* Login card */}
       <div style={styles.card}>
         <h2 style={styles.title}>{t.title}</h2>
 
         <input
-          style={styles.input}
           type="email"
           placeholder={t.email}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          style={styles.input}
         />
 
         <input
-          style={styles.input}
           type="password"
           placeholder={t.password}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
         />
 
         <button style={styles.button}>{t.button}</button>
@@ -57,64 +68,79 @@ export default function LoginPage() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
+  page: {
     minHeight: '100vh',
     background: '#e6e6e6',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
     fontFamily: 'Arial, sans-serif',
+    position: 'relative',
   },
-  lang: {
+
+  langSwitcher: {
     position: 'absolute',
     top: 20,
     right: 20,
     display: 'flex',
     gap: 6,
   },
-  langBtn: {
+
+  langButton: {
     padding: '6px 10px',
     fontSize: 12,
-    borderRadius: 4,
+    borderRadius: 6,
     border: '1px solid #bbb',
     background: '#f5f5f5',
+    color: '#333',
     cursor: 'pointer',
   },
-  langBtnActive: {
+
+  langButtonActive: {
     background: '#333',
     color: '#fff',
-    borderColor: '#333',
+    border: '1px solid #333',
   },
+
   card: {
-    background: '#fff',
-    padding: 32,
-    borderRadius: 10,
     width: 320,
-    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+    background: '#ffffff',
+    padding: 24,
+    borderRadius: 14,
+    boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
     display: 'flex',
     flexDirection: 'column',
-    gap: 14,
+    gap: 12,
   },
+
   title: {
-    marginBottom: 10,
     textAlign: 'center',
+    marginBottom: 10,
+    color: '#222',
+    fontWeight: 600,
   },
+
   input: {
-    padding: 10,
-    fontSize: 14,
-    borderRadius: 6,
-    border: '1px solid #ccc',
-  },
-  button: {
     padding: 12,
-    marginTop: 10,
-    background: '#333',
-    color: '#fff',
-    border: 'none',
-    borderRadius: 6,
-    cursor: 'pointer',
     fontSize: 14,
+    borderRadius: 8,
+    border: '1px solid #ccc',
+    color: '#222',
+    outline: 'none',
+  },
+
+  button: {
+    marginTop: 8,
+    padding: 12,
+    borderRadius: 8,
+    border: 'none',
+    background: '#333',
+    color: '#f2f2f2',
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: 'pointer',
   },
 };
