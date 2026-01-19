@@ -8,6 +8,7 @@ export type User = {
 
 const STORAGE_KEY = 'users';
 
+/* ===== DEFAULT USERS ===== */
 const defaultUsers: User[] = [
   {
     login: 'Lika',
@@ -16,10 +17,12 @@ const defaultUsers: User[] = [
   },
 ];
 
+/* ===== GET USERS ===== */
 export function getUsers(): User[] {
-  if (typeof window === 'undefined') return defaultUsers;
+  if (typeof window === 'undefined') return [];
 
   const data = localStorage.getItem(STORAGE_KEY);
+
   if (!data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUsers));
     return defaultUsers;
@@ -28,6 +31,20 @@ export function getUsers(): User[] {
   return JSON.parse(data);
 }
 
+/* ===== SAVE USERS ===== */
 export function saveUsers(users: User[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+}
+
+/* ===== AUTH ===== */
+export function authenticate(
+  login: string,
+  password: string
+): User | null {
+  const users = getUsers();
+  return (
+    users.find(
+      (u) => u.login === login && u.password === password
+    ) || null
+  );
 }
