@@ -14,7 +14,6 @@ const tabs = [
   'Finance',
   'Analytics',
   'Support',
-  'Access settings', // admin only
 ];
 
 export default function HomePage() {
@@ -61,25 +60,28 @@ export default function HomePage() {
 
       {/* Tabs */}
       <div style={styles.tabs}>
-        {tabs.map((tab, index) => {
-          const isAdminTab = tab === 'Access settings';
-          const disabled = isAdminTab && role !== 'admin';
+        {tabs.map((tab, index) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(index)}
+            style={{
+              ...styles.tab,
+              ...(activeTab === index ? styles.tabActive : {}),
+            }}
+          >
+            {tab}
+          </button>
+        ))}
 
-          return (
-            <button
-              key={tab}
-              onClick={() => !disabled && setActiveTab(index)}
-              style={{
-                ...styles.tab,
-                ...(activeTab === index ? styles.tabActive : {}),
-                ...(isAdminTab ? styles.adminTab : {}),
-                ...(disabled ? styles.tabDisabled : {}),
-              }}
-            >
-              {tab}
-            </button>
-          );
-        })}
+        {/* 🔴 ADMIN TAB — ТОЛЬКО КНОПКА */}
+        {role === 'admin' && (
+          <button
+            onClick={() => router.push('/admin')}
+            style={{ ...styles.tab, ...styles.adminTab }}
+          >
+            ⚠ Admin panel
+          </button>
+        )}
       </div>
 
       {/* Content */}
@@ -145,11 +147,7 @@ const styles: Record<string, React.CSSProperties> = {
   adminTab: {
     border: '1px solid #b00020',
     color: '#b00020',
-  },
-
-  tabDisabled: {
-    opacity: 0.4,
-    cursor: 'not-allowed',
+    fontWeight: 600,
   },
 
   content: {
