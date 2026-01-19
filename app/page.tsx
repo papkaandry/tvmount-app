@@ -38,8 +38,10 @@ export default function HomePage() {
     setUser(storedUser);
   }, [router]);
 
+  // ✅ FIXED LOGOUT — НЕ ТРОГАЕМ users
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
     router.push('/login');
   };
 
@@ -76,7 +78,6 @@ export default function HomePage() {
           </button>
         ))}
 
-        {/* 🔴 ADMIN TAB */}
         {role === 'admin' && (
           <button
             onClick={() => setActiveTab('Admin')}
