@@ -7,35 +7,29 @@ const roles: Role[] = ['admin', 'manager1', 'manager2', 'master'];
 
 export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
-  const [newLogin, setNewLogin] = useState('');
-  const [newRole, setNewRole] = useState<Role>('manager1');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<Role>('manager1');
 
   useEffect(() => {
     setUsers(getUsers());
   }, []);
 
-  const updateRole = (login: string, role: Role) => {
-    const updated = users.map(u =>
-      u.login === login ? { ...u, role } : u
-    );
-    setUsers(updated);
-    saveUsers(updated);
-  };
-
   const addUser = () => {
-    if (!newLogin.trim()) return;
+    if (!login || !password) return;
 
-    if (users.find(u => u.login === newLogin)) {
+    if (users.find((u) => u.login === login)) {
       alert('User already exists');
       return;
     }
 
-    const updated = [...users, { login: newLogin, role: newRole }];
+    const updated = [...users, { login, password, role }];
     setUsers(updated);
     saveUsers(updated);
 
-    setNewLogin('');
-    setNewRole('manager1');
+    setLogin('');
+    setPassword('');
+    setRole('manager1');
   };
 
   return (
@@ -51,21 +45,10 @@ export default function AdminPanel() {
           </tr>
         </thead>
         <tbody>
-          {users.map(user => (
-            <tr key={user.login}>
-              <td>{user.login}</td>
-              <td>
-                <select
-                  value={user.role}
-                  onChange={(e) =>
-                    updateRole(user.login, e.target.value as Role)
-                  }
-                >
-                  {roles.map(r => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
-              </td>
+          {users.map((u) => (
+            <tr key={u.login}>
+              <td>{u.login}</td>
+              <td>{u.role}</td>
             </tr>
           ))}
         </tbody>
@@ -75,17 +58,24 @@ export default function AdminPanel() {
       <div style={styles.addBox}>
         <input
           placeholder="Login"
-          value={newLogin}
-          onChange={(e) => setNewLogin(e.target.value)}
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          style={styles.input}
+        />
+
+        <input
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
 
         <select
-          value={newRole}
-          onChange={(e) => setNewRole(e.target.value as Role)}
+          value={role}
+          onChange={(e) => setRole(e.target.value as Role)}
           style={styles.input}
         >
-          {roles.map(r => (
+          {roles.map((r) => (
             <option key={r} value={r}>{r}</option>
           ))}
         </select>
@@ -107,24 +97,21 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 10,
     border: '1px solid #b00020',
   },
-
   table: {
     width: '100%',
     marginBottom: 20,
     borderCollapse: 'collapse',
   },
-
   addBox: {
     display: 'flex',
     gap: 10,
+    flexWrap: 'wrap',
   },
-
   input: {
     padding: 8,
     borderRadius: 6,
     border: '1px solid #ccc',
   },
-
   button: {
     padding: '8px 14px',
     borderRadius: 6,
@@ -135,4 +122,3 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
   },
 };
-
