@@ -1,32 +1,52 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [lang, setLang] = useState<'ru' | 'ua' | 'en'>('ru');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const texts = {
     ru: {
       title: 'Вход',
-      email: 'Email',
+      email: 'Логин',
       password: 'Пароль',
       button: 'Войти',
+      error: 'Неверный логин или пароль',
     },
     ua: {
       title: 'Вхід',
-      email: 'Email',
+      email: 'Логін',
       password: 'Пароль',
       button: 'Увійти',
+      error: 'Невірний логін або пароль',
     },
     en: {
       title: 'Login',
-      email: 'Email',
+      email: 'Login',
       password: 'Password',
       button: 'Sign in',
+      error: 'Invalid login or password',
     },
   };
 
   const t = texts[lang];
+
+  const handleLogin = () => {
+    if (login === 'Lika' && password === 'Lomka') {
+      localStorage.setItem('role', 'admin');
+      localStorage.setItem('user', login);
+      router.push('/');
+      return;
+    }
+
+    setError(t.error);
+  };
 
   return (
     <div style={styles.page}>
@@ -51,18 +71,26 @@ export default function LoginPage() {
         <h2 style={styles.title}>{t.title}</h2>
 
         <input
-          type="email"
+          type="text"
           placeholder={t.email}
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
           style={styles.input}
         />
 
         <input
           type="password"
           placeholder={t.password}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
         />
 
-        <button style={styles.button}>{t.button}</button>
+        {error && <div style={styles.error}>{error}</div>}
+
+        <button style={styles.button} onClick={handleLogin}>
+          {t.button}
+        </button>
       </div>
     </div>
   );
@@ -142,5 +170,11 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     fontWeight: 600,
     cursor: 'pointer',
+  },
+
+  error: {
+    color: '#c62828',
+    fontSize: 13,
+    textAlign: 'center',
   },
 };
