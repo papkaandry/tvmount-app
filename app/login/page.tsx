@@ -5,27 +5,12 @@ import { useState } from 'react';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [lang, setLang] = useState<'ru' | 'ua' | 'en'>('ru');
+  const [lang, setLang] = useState<'ru' | 'ua' | 'en'>('ua');
 
   const texts = {
-    ru: {
-      title: 'Вход',
-      email: 'Email',
-      password: 'Пароль',
-      button: 'Войти',
-    },
-    ua: {
-      title: 'Вхід',
-      email: 'Email',
-      password: 'Пароль',
-      button: 'Увійти',
-    },
-    en: {
-      title: 'Login',
-      email: 'Email',
-      password: 'Password',
-      button: 'Sign in',
-    },
+    ru: { title: 'Вход', email: 'Email', password: 'Пароль', button: 'Войти' },
+    ua: { title: 'Вхід', email: 'Email', password: 'Пароль', button: 'Увійти' },
+    en: { title: 'Login', email: 'Email', password: 'Password', button: 'Sign in' },
   };
 
   const t = texts[lang];
@@ -33,13 +18,22 @@ export default function LoginPage() {
   return (
     <div style={styles.wrapper}>
       <div style={styles.lang}>
-        <button onClick={() => setLang('ru')}>RU</button>
-        <button onClick={() => setLang('ua')}>UA</button>
-        <button onClick={() => setLang('en')}>EN</button>
+        {(['ru', 'ua', 'en'] as const).map((l) => (
+          <button
+            key={l}
+            onClick={() => setLang(l)}
+            style={{
+              ...styles.langBtn,
+              ...(lang === l ? styles.langBtnActive : {}),
+            }}
+          >
+            {l.toUpperCase()}
+          </button>
+        ))}
       </div>
 
       <div style={styles.card}>
-        <h2>{t.title}</h2>
+        <h2 style={styles.title}>{t.title}</h2>
 
         <input
           style={styles.input}
@@ -66,7 +60,7 @@ export default function LoginPage() {
 const styles: Record<string, React.CSSProperties> = {
   wrapper: {
     minHeight: '100vh',
-    background: '#f2f2f2',
+    background: '#e6e6e6',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -78,32 +72,49 @@ const styles: Record<string, React.CSSProperties> = {
     top: 20,
     right: 20,
     display: 'flex',
-    gap: 8,
+    gap: 6,
+  },
+  langBtn: {
+    padding: '6px 10px',
+    fontSize: 12,
+    borderRadius: 4,
+    border: '1px solid #bbb',
+    background: '#f5f5f5',
+    cursor: 'pointer',
+  },
+  langBtnActive: {
+    background: '#333',
+    color: '#fff',
+    borderColor: '#333',
   },
   card: {
     background: '#fff',
     padding: 32,
-    borderRadius: 8,
+    borderRadius: 10,
     width: 320,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
     display: 'flex',
     flexDirection: 'column',
-    gap: 12,
+    gap: 14,
+  },
+  title: {
+    marginBottom: 10,
+    textAlign: 'center',
   },
   input: {
     padding: 10,
     fontSize: 14,
-    borderRadius: 4,
+    borderRadius: 6,
     border: '1px solid #ccc',
   },
   button: {
-    padding: 10,
+    padding: 12,
     marginTop: 10,
     background: '#333',
     color: '#fff',
     border: 'none',
-    borderRadius: 4,
+    borderRadius: 6,
     cursor: 'pointer',
+    fontSize: 14,
   },
 };
-
