@@ -10,6 +10,7 @@ export default function AdminPanel() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('manager1');
+  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     setUsers(getUsers());
@@ -32,27 +33,48 @@ export default function AdminPanel() {
     setRole('manager1');
   };
 
+  const togglePassword = (login: string) => {
+    setVisiblePasswords((prev) => ({
+      ...prev,
+      [login]: !prev[login],
+    }));
+  };
+
+  const maskPassword = (pwd: string) =>
+    pwd.length <= 2 ? '**' : pwd.slice(0, 2) + '*'.repeat(pwd.length - 2);
+
   return (
     <div style={styles.box}>
       <h3>Admin panel — Users</h3>
 
-      {/* USERS TABLE */}
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th>Login</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.login}>
-              <td>{u.login}</td>
-              <td>{u.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {/* TABLE HEADER */}
+      <div style={{ ...styles.row, fontWeight: 600 }}>
+        <div>Login</div>
+        <div>Password</div>
+        <div>Role</div>
+      </div>
+
+      {/* USERS */}
+      {users.map((u) => (
+        <div key={u.login} style={styles.row}>
+          <div>{u.login}</div>
+
+          <div style={styles.passwordCell}>
+            <span>
+              {visiblePasswords[u.login] ? u.password : maskPassword(u.password)}
+            </span>
+            <button
+              onClick={() => togglePassword(u.login)}
+              style={styles.eye}
+              title="Show / hide password"
+            >
+              👁
+            </button>
+          </div>
+
+          <div>{u.role}</div>
+        </div>
+      ))}
 
       {/* ADD USER */}
       <div style={styles.addBox}>
@@ -88,7 +110,7 @@ export default function AdminPanel() {
   );
 }
 
-/* ===== STYLES ===== */
+/* ================= STYLES ================= */
 
 const styles: Record<string, React.CSSProperties> = {
   box: {
@@ -97,21 +119,41 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 10,
     border: '1px solid #b00020',
   },
-  table: {
-    width: '100%',
-    marginBottom: 20,
-    borderCollapse: 'collapse',
-  },
-  addBox: {
-    display: 'flex',
+
+  row: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr',
     gap: 10,
-    flexWrap: 'wrap',
+    padding: '6px 0',
+    alignItems: 'center',
   },
+
+  passwordCell: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+  },
+
+  eye: {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: 16,
+  },
+
+  addBox: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr 1fr auto',
+    gap: 10,
+    marginTop: 15,
+  },
+
   input: {
     padding: 8,
     borderRadius: 6,
     border: '1px solid #ccc',
   },
+
   button: {
     padding: '8px 14px',
     borderRadius: 6,
