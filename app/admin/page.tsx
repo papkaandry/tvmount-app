@@ -3,52 +3,113 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+type Role = 'admin' | 'manager1' | 'manager2' | 'master';
+
+type User = {
+  login: string;
+  password: string;
+  role: Role;
+};
+
 export default function AdminPage() {
   const router = useRouter();
-  const [user, setUser] = useState<string | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<Role>('manager1');
 
+  // 🔒 access control
   useEffect(() => {
-    const role = localStorage.getItem('role');
-    const storedUser = localStorage.getItem('user');
-
-    if (role !== 'admin') {
+    const currentRole = localStorage.getItem('role');
+    if (currentRole !== 'admin') {
       router.push('/');
       return;
     }
 
-    setUser(storedUser);
+    const storedUsers = localStorage.getItem('users');
+    if (storedUsers) {
+      setUsers(JSON.parse(storedUsers));
+    } else {
+      // initial admin user
+      const initialUsers: User[] = [
+        { login: 'Lika', password: 'Lomka', role: 'admin' },
+      ];
+      localStorage.setItem('users', JSON.stringify(initialUsers));
+      setUsers(initialUsers);
+    }
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    router.push('/login');
-  };
+  // ➕ add user
+  const addUser = () => {
+    if (!login || !password) return;
 
-  if (!user) return null;
+    const exists = users.some((u) => u.login === login);
+    if (exists) {
+      alert('User already exists');
+      return;
+    }
+
+    const newUser: User = { login, password, role };
+    const updatedUsers = [...users, newUser];
+
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+    setLogin('');
+    setPassword('');
+    setRole('manager1');
+  };
 
   return (
     <div style={styles.page}>
-      <div style={styles.topBar}>
-        <div>
-          <strong>Admin:</strong> {user}
-        </div>
+      <h2>Admin panel</h2>
 
-        <button onClick={handleLogout} style={styles.logout}>
-          Logout
-        </button>
+      {/* USERS LIST */}
+      <div style={styles.card}>
+        <h3>Users</h3>
+
+        {users.map((user, index) => (
+          <div key={index} style={styles.userRow}>
+            <div>
+              <strong>{user.login}</strong>
+            </div>
+            <div>{user.role}</div>
+          </div>
+        ))}
       </div>
 
-      <h2 style={styles.title}>Admin access settings</h2>
-
+      {/* ADD USER */}
       <div style={styles.card}>
-        <p>🔒 This section is available only for admin</p>
+        <h3>Add user</h3>
 
-        <ul>
-          <li>Manage user roles</li>
-          <li>Access permissions</li>
-          <li>System settings</li>
-          <li>Security rules</li>
-        </ul>
+        <input
+          placeholder="Login"
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          style={styles.input}
+        />
+
+        <input
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
+        />
+
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as Role)}
+          style={styles.input}
+        >
+          <option value="admin">admin</option>
+          <option value="manager1">manager1</option>
+          <option value="manager2">manager2</option>
+          <option value="master">master</option>
+        </select>
+
+        <button onClick={addUser} style={styles.button}>
+          Add user
+        </button>
       </div>
     </div>
   );
@@ -58,38 +119,42 @@ export default function AdminPage() {
 
 const styles: Record<string, React.CSSProperties> = {
   page: {
-    minHeight: '100vh',
     padding: 30,
-    background: '#f2f2f2',
     fontFamily: 'Arial, sans-serif',
-  },
-
-  topBar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-
-  logout: {
-    padding: '8px 14px',
-    borderRadius: 8,
-    border: 'none',
-    background: '#b00020',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-
-  title: {
-    marginBottom: 20,
+    background: '#f2f2f2',
+    minHeight: '100vh',
   },
 
   card: {
     background: '#fff',
     padding: 20,
     borderRadius: 12,
-    boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+    marginBottom: 20,
+    boxShadow: '0 6px 18px rgba(0,0,0,0.1)',
+  },
+
+  userRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '8px 0',
+    borderBottom: '1px solid #eee',
+  },
+
+  input: {
+    width: '100%',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 6,
+    border: '1px solid #ccc',
+  },
+
+  button: {
+    padding: 10,
+    borderRadius: 6,
+    border: 'none',
+    background: '#333',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 600,
   },
 };
-
