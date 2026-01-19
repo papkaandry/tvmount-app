@@ -20,23 +20,46 @@ const tabs = [
 export default function HomePage() {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
+  const [user, setUser] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const storedRole = localStorage.getItem('role');
-    if (!storedRole) {
+    const storedUser = localStorage.getItem('user');
+
+    if (!storedRole || !storedUser) {
       router.push('/login');
       return;
     }
+
     setRole(storedRole);
+    setUser(storedUser);
   }, [router]);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    router.push('/login');
+  };
 
   if (!role) return null;
 
   return (
     <div style={styles.page}>
+      {/* Top bar */}
+      <div style={styles.topBar}>
+        <div>
+          <strong>User:</strong> {user} <br />
+          <strong>Role:</strong> {role}
+        </div>
+
+        <button onClick={handleLogout} style={styles.logout}>
+          Logout
+        </button>
+      </div>
+
       <h2 style={styles.title}>Dashboard</h2>
 
+      {/* Tabs */}
       <div style={styles.tabs}>
         {tabs.map((tab, index) => {
           const isAdminTab = tab === 'Access settings';
@@ -59,6 +82,7 @@ export default function HomePage() {
         })}
       </div>
 
+      {/* Content */}
       <div style={styles.content}>
         <strong>Active tab:</strong> {tabs[activeTab]}
       </div>
@@ -75,15 +99,35 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#f2f2f2',
     minHeight: '100vh',
   },
+
+  topBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  logout: {
+    padding: '8px 14px',
+    borderRadius: 8,
+    border: 'none',
+    background: '#b00020',
+    color: '#fff',
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+
   title: {
     marginBottom: 20,
   },
+
   tabs: {
     display: 'flex',
     flexWrap: 'wrap',
     gap: 8,
     marginBottom: 20,
   },
+
   tab: {
     padding: '10px 14px',
     borderRadius: 8,
@@ -91,19 +135,23 @@ const styles: Record<string, React.CSSProperties> = {
     background: '#fff',
     cursor: 'pointer',
   },
+
   tabActive: {
     background: '#333',
     color: '#fff',
     border: '1px solid #333',
   },
+
   adminTab: {
     border: '1px solid #b00020',
     color: '#b00020',
   },
+
   tabDisabled: {
     opacity: 0.4,
     cursor: 'not-allowed',
   },
+
   content: {
     padding: 20,
     background: '#fff',
