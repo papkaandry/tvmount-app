@@ -27,7 +27,7 @@ export function saveUsers(users: User[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
 }
 
-/* ================= INIT USERS (ONCE) ================= */
+/* ================= INIT USERS (ADMIN ONCE) ================= */
 export function initUsersIfNeeded() {
   if (typeof window === 'undefined') return;
 
