@@ -7,6 +7,7 @@ import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
 export default function LoginPage() {
   const router = useRouter();
 
+  // ✅ ИНИЦИАЛИЗАЦИЯ АДМИНА (ОДИН РАЗ)
   useEffect(() => {
     initUsersIfNeeded();
   }, []);
@@ -16,6 +17,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
 
   const handleLogin = () => {
+    setError('');
+
     const users = getUsers();
 
     const user = users.find(
@@ -36,7 +39,7 @@ export default function LoginPage() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <h2>Login</h2>
+        <h2 style={{ textAlign: 'center' }}>Login</h2>
 
         <input
           placeholder="Login"
@@ -59,6 +62,8 @@ export default function LoginPage() {
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
@@ -66,16 +71,20 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    fontFamily: 'Arial, sans-serif',
   },
+
   card: {
     width: 320,
-    background: '#fff',
+    background: '#ffffff',
     padding: 24,
     borderRadius: 14,
+    boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
   },
+
   error: {
     color: '#c62828',
     fontSize: 13,
