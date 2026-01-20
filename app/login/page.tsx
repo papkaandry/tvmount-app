@@ -35,19 +35,18 @@ export default function LoginPage() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Sign in</h2>
+      <div style={styles.wrapper}>
+        <h1 style={styles.logo}>Service Panel</h1>
+        <p style={styles.subtitle}>Sign in to your workspace</p>
 
-        <div style={styles.field}>
+        <div style={styles.form}>
           <input
             style={styles.input}
             placeholder="Login"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
           />
-        </div>
 
-        <div style={styles.field}>
           <input
             style={styles.input}
             type="password"
@@ -55,13 +54,13 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          {error && <div style={styles.error}>{error}</div>}
+
+          <button style={styles.button} onClick={handleLogin}>
+            Continue
+          </button>
         </div>
-
-        {error && <div style={styles.error}>{error}</div>}
-
-        <button style={styles.button} onClick={handleLogin}>
-          Login
-        </button>
       </div>
     </div>
   );
@@ -72,63 +71,65 @@ export default function LoginPage() {
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(180deg, #f4f5f7, #e9eaee)',
+    background: '#0b0d12',
     display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center',
-    fontFamily: 'Inter, Arial, sans-serif',
+    justifyContent: 'center',
+    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+    color: '#fff',
   },
 
-  card: {
-    width: 360,
-    background: '#ffffff',
-    padding: 32,
-    borderRadius: 24,
-    boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
+  wrapper: {
+    width: '100%',
+    maxWidth: 420,
+    padding: '0 24px',
+  },
+
+  logo: {
+    fontSize: 28,
+    fontWeight: 700,
+    marginBottom: 8,
+    letterSpacing: '-0.5px',
+  },
+
+  subtitle: {
+    fontSize: 14,
+    color: '#9ba1aa',
+    marginBottom: 32,
+  },
+
+  form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: 18,
-  },
-
-  title: {
-    textAlign: 'center',
-    fontWeight: 600,
-    fontSize: 22,
-    marginBottom: 10,
-  },
-
-  field: {
-    display: 'flex',
-    flexDirection: 'column',
+    gap: 14,
   },
 
   input: {
-    height: 46,
+    height: 48,
+    background: '#141824',
+    border: '1px solid #1f2433',
+    borderRadius: 12,
     padding: '0 16px',
-    borderRadius: 14,
-    border: '1px solid #ddd',
-    fontSize: 15,
+    color: '#fff',
+    fontSize: 14,
     outline: 'none',
-    transition: 'border 0.2s ease',
   },
 
   button: {
-    marginTop: 10,
+    marginTop: 12,
     height: 48,
-    borderRadius: 16,
+    borderRadius: 14,
     border: 'none',
-    background: '#111',
-    color: '#fff',
-    fontSize: 15,
+    background: '#ffffff',
+    color: '#000',
+    fontSize: 14,
     fontWeight: 600,
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
   },
 
   error: {
-    color: '#ff4d4f',
     fontSize: 13,
-    textAlign: 'center',
+    color: '#ff6b6b',
+    marginTop: 4,
   },
 };
-
