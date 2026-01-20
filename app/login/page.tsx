@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
 
 const MONKEY_GIF =
-  'https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif';
+  'https://www.meme-arsenal.com/memes/7fde6ef643da6245009051178297c9e9.jpg';
 
 export default function LoginPage() {
   const router = useRouter();
