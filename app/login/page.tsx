@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
 
+const MONKEY_GIF =
+  'https://media.giphy.com/media/3o6Zt481isNVuQI1l6/giphy.gif';
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -14,6 +17,7 @@ export default function LoginPage() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showMonkey, setShowMonkey] = useState(false);
 
   const handleLogin = () => {
     setError('');
@@ -65,8 +69,40 @@ export default function LoginPage() {
           LOGIN
         </button>
 
-        <div style={styles.forgot}>Forgot password?</div>
+        <div
+          style={styles.forgot}
+          onClick={() => setShowMonkey(true)}
+        >
+          Forgot password?
+        </div>
       </div>
+
+      {showMonkey && (
+        <div
+          style={styles.modalOverlay}
+          onClick={() => setShowMonkey(false)}
+        >
+          <div
+            style={styles.modal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={MONKEY_GIF}
+              alt="monkey"
+              style={styles.monkey}
+            />
+            <div style={styles.modalText}>
+              Not implemented. Deal with it.
+            </div>
+            <button
+              style={styles.closeBtn}
+              onClick={() => setShowMonkey(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -93,6 +129,8 @@ const styles: Record<string, React.CSSProperties> = {
     WebkitBackdropFilter: 'blur(14px)',
     border: '1px solid rgba(255,255,255,0.6)',
     color: '#fff',
+    position: 'relative',
+    zIndex: 2,
   },
 
   title: {
@@ -149,5 +187,51 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#ffd6d6',
     fontSize: 13,
     textAlign: 'center',
+  },
+
+  /* ===== MONKEY MODAL ===== */
+
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,0.45)',
+    backdropFilter: 'blur(6px)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+  },
+
+  modal: {
+    width: 320,
+    padding: 20,
+    borderRadius: 10,
+    background: 'rgba(255,255,255,0.15)',
+    border: '1px solid rgba(255,255,255,0.4)',
+    textAlign: 'center',
+    color: '#fff',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+  },
+
+  monkey: {
+    width: '100%',
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+
+  modalText: {
+    fontSize: 13,
+    opacity: 0.85,
+    marginBottom: 14,
+    letterSpacing: 0.5,
+  },
+
+  closeBtn: {
+    width: '100%',
+    height: 34,
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.6)',
+    color: '#fff',
+    cursor: 'pointer',
   },
 };
