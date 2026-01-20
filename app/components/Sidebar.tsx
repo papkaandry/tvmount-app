@@ -1,6 +1,8 @@
 'use client';
 
-import { permissions, Role } from '@/app/lib/permissions';
+import { useEffect, useState } from 'react';
+import { permissions } from '@/app/lib/permissions';
+import type { Role } from '@/app/lib/users';
 
 const commonTabs = [
   'Dashboard',
@@ -10,16 +12,18 @@ const commonTabs = [
   'Analytics',
   'Reports',
   'Finance',
-  'Works', // ← было Support
+  'Works',
   'Notifications',
   'Profile',
 ];
 
 export default function Sidebar() {
-  const role =
-    typeof window !== 'undefined'
-      ? (localStorage.getItem('role') as Role)
-      : null;
+  const [role, setRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role') as Role | null;
+    setRole(storedRole);
+  }, []);
 
   if (!role) return null;
 
@@ -33,7 +37,6 @@ export default function Sidebar() {
         </div>
       ))}
 
-      {/* 🔴 ТОЛЬКО АДМИН */}
       {permissions[role]?.accessSettings && (
         <div style={{ ...styles.item, ...styles.adminItem }}>
           Access Settings
@@ -42,6 +45,8 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+/* ================= STYLES ================= */
 
 const styles: Record<string, React.CSSProperties> = {
   sidebar: {
