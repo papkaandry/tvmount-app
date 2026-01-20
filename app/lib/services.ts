@@ -1,4 +1,4 @@
-import { SERVICES, ServiceItem } from '@/app/config/services';
+import { SERVICES, ServiceItem } from '../config/services';
 
 export type StoredService = ServiceItem & {
   enabled: boolean;
@@ -6,6 +6,11 @@ export type StoredService = ServiceItem & {
 
 const STORAGE_KEY = 'services';
 
+/**
+ * Инициализация сервисов:
+ * берём дефолтные услуги из config/services.ts
+ * и кладём в localStorage, если там ещё пусто
+ */
 export function initServicesIfNeeded() {
   if (typeof window === 'undefined') return;
 
@@ -20,6 +25,9 @@ export function initServicesIfNeeded() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
 }
 
+/**
+ * Получить все сервисы из localStorage
+ */
 export function getServices(): StoredService[] {
   if (typeof window === 'undefined') return [];
 
@@ -27,12 +35,15 @@ export function getServices(): StoredService[] {
   if (!raw) return [];
 
   try {
-    return JSON.parse(raw);
+    return JSON.parse(raw) as StoredService[];
   } catch {
     return [];
   }
 }
 
+/**
+ * Сохранить сервисы в localStorage
+ */
 export function saveServices(services: StoredService[]) {
   if (typeof window === 'undefined') return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(services));
