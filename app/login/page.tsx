@@ -17,8 +17,8 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     setError('');
-
     const users = getUsers();
+
     const user = users.find(
       (u) => u.login === login && u.password === password
     );
@@ -35,18 +35,21 @@ export default function LoginPage() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.wrapper}>
-        <h1 style={styles.logo}>Service Panel</h1>
-        <p style={styles.subtitle}>Sign in to your workspace</p>
+      <div style={styles.glass}>
+        <h2 style={styles.title}>USER LOGIN</h2>
 
-        <div style={styles.form}>
+        <div style={styles.field}>
+          <span style={styles.icon}>✉</span>
           <input
             style={styles.input}
-            placeholder="Login"
+            placeholder="Email ID"
             value={login}
             onChange={(e) => setLogin(e.target.value)}
           />
+        </div>
 
+        <div style={styles.field}>
+          <span style={styles.icon}>🔒</span>
           <input
             style={styles.input}
             type="password"
@@ -54,13 +57,18 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+        </div>
 
-          {error && <div style={styles.error}>{error}</div>}
+        {error && <div style={styles.error}>{error}</div>}
 
-          <button style={styles.button} onClick={handleLogin}>
-            Continue
+        <div style={styles.buttons}>
+          <button style={styles.secondary}>REGISTER</button>
+          <button style={styles.primary} onClick={handleLogin}>
+            LOGIN
           </button>
         </div>
+
+        <div style={styles.forgot}>Forgot password?</div>
       </div>
     </div>
   );
@@ -71,65 +79,94 @@ export default function LoginPage() {
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
-    background: '#0b0d12',
+    background:
+      'linear-gradient(135deg, #4f5b66 0%, #c9c9c9 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont',
+    fontFamily: 'Inter, Arial, sans-serif',
+  },
+
+  glass: {
+    width: 420,
+    padding: '30px 32px',
+    borderRadius: 4,
+    background: 'rgba(255,255,255,0.18)',
+    backdropFilter: 'blur(14px)',
+    WebkitBackdropFilter: 'blur(14px)',
+    border: '1px solid rgba(255,255,255,0.6)',
     color: '#fff',
   },
 
-  wrapper: {
-    width: '100%',
-    maxWidth: 420,
-    padding: '0 24px',
+  title: {
+    textAlign: 'center',
+    marginBottom: 24,
+    letterSpacing: 2,
+    fontWeight: 400,
   },
 
-  logo: {
-    fontSize: 28,
-    fontWeight: 700,
-    marginBottom: 8,
-    letterSpacing: '-0.5px',
-  },
-
-  subtitle: {
-    fontSize: 14,
-    color: '#9ba1aa',
-    marginBottom: 32,
-  },
-
-  form: {
+  field: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: 14,
+    alignItems: 'center',
+    borderBottom: '1px solid rgba(255,255,255,0.7)',
+    marginBottom: 20,
+    paddingBottom: 6,
+  },
+
+  icon: {
+    marginRight: 10,
+    fontSize: 16,
+    opacity: 0.9,
   },
 
   input: {
-    height: 48,
-    background: '#141824',
-    border: '1px solid #1f2433',
-    borderRadius: 12,
-    padding: '0 16px',
+    flex: 1,
+    background: 'transparent',
+    border: 'none',
+    outline: 'none',
     color: '#fff',
     fontSize: 14,
-    outline: 'none',
   },
 
-  button: {
-    marginTop: 12,
-    height: 48,
-    borderRadius: 14,
-    border: 'none',
-    background: '#ffffff',
-    color: '#000',
-    fontSize: 14,
-    fontWeight: 600,
+  buttons: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
+
+  primary: {
+    width: 140,
+    height: 38,
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.8)',
+    color: '#fff',
+    cursor: 'pointer',
+    letterSpacing: 1,
+  },
+
+  secondary: {
+    width: 140,
+    height: 38,
+    background: 'transparent',
+    border: '1px solid rgba(255,255,255,0.4)',
+    color: '#fff',
+    cursor: 'pointer',
+    letterSpacing: 1,
+    opacity: 0.8,
+  },
+
+  forgot: {
+    marginTop: 18,
+    textAlign: 'right',
+    fontSize: 12,
+    opacity: 0.8,
     cursor: 'pointer',
   },
 
   error: {
+    marginTop: 10,
+    color: '#ffd6d6',
     fontSize: 13,
-    color: '#ff6b6b',
-    marginTop: 4,
+    textAlign: 'center',
   },
 };
