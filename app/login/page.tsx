@@ -92,7 +92,7 @@ export default function LoginPage() {
               style={styles.monkey}
             />
             <div style={styles.modalText}>
-              Not implemented. Deal with it.
+              **Write to the admin**
             </div>
             <button
               style={styles.closeBtn}
