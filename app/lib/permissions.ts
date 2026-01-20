@@ -1,6 +1,10 @@
-export type Role = 'admin' | 'manager1' | 'manager2' | 'master';
+import type { Role } from './users';
 
-export const permissions: Record<Role, { accessSettings: boolean }> = {
+type PermissionSet = {
+  accessSettings: boolean;
+};
+
+export const permissions: Record<Role, PermissionSet> = {
   admin: {
     accessSettings: true,
   },
