@@ -61,12 +61,9 @@ export default function LoginPage() {
 
         {error && <div style={styles.error}>{error}</div>}
 
-        <div style={styles.buttons}>
-          <button style={styles.secondary}>REGISTER</button>
-          <button style={styles.primary} onClick={handleLogin}>
-            LOGIN
-          </button>
-        </div>
+        <button style={styles.primary} onClick={handleLogin}>
+          LOGIN
+        </button>
 
         <div style={styles.forgot}>Forgot password?</div>
       </div>
@@ -128,31 +125,15 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
   },
 
-  buttons: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: 30,
-  },
-
   primary: {
-    width: 140,
+    width: '100%',
     height: 38,
+    marginTop: 30,
     background: 'transparent',
     border: '1px solid rgba(255,255,255,0.8)',
     color: '#fff',
     cursor: 'pointer',
     letterSpacing: 1,
-  },
-
-  secondary: {
-    width: 140,
-    height: 38,
-    background: 'transparent',
-    border: '1px solid rgba(255,255,255,0.4)',
-    color: '#fff',
-    cursor: 'pointer',
-    letterSpacing: 1,
-    opacity: 0.8,
   },
 
   forgot: {
