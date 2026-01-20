@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminPanel from './components/AdminPanel';
+import WorksPanel from './components/WorksPanel';
 import { Role } from './lib/users';
 
 const tabs = [
@@ -15,7 +16,7 @@ const tabs = [
   'Warehouse',
   'Finance',
   'Analytics',
-  'Support',
+  'Works', // ← было Support
 ];
 
 export default function HomePage() {
@@ -92,9 +93,11 @@ export default function HomePage() {
 
       {/* CONTENT */}
       <div style={styles.content}>
-        {activeTab === 'Admin' && role === 'admin' ? (
-          <AdminPanel />
-        ) : (
+        {activeTab === 'Admin' && role === 'admin' && <AdminPanel />}
+
+        {activeTab === 'Works' && <WorksPanel />}
+
+        {activeTab !== 'Admin' && activeTab !== 'Works' && (
           <div>
             <strong>Active tab:</strong> {activeTab}
           </div>
@@ -103,74 +106,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-/* ================= STYLES ================= */
-
-const styles: Record<string, React.CSSProperties> = {
-  page: {
-    padding: 30,
-    fontFamily: 'Arial, sans-serif',
-    background: '#f2f2f2',
-    minHeight: '100vh',
-  },
-
-  topBar: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-
-  logout: {
-    padding: '8px 14px',
-    borderRadius: 8,
-    border: 'none',
-    background: '#b00020',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-
-  title: {
-    marginBottom: 20,
-  },
-
-  tabs: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 20,
-  },
-
-  tab: {
-    padding: '10px 14px',
-    borderRadius: 8,
-    border: '1px solid #ccc',
-    background: '#fff',
-    cursor: 'pointer',
-  },
-
-  tabActive: {
-    background: '#333',
-    color: '#fff',
-    border: '1px solid #333',
-  },
-
-  adminTab: {
-    border: '1px solid #b00020',
-    color: '#b00020',
-    fontWeight: 600,
-  },
-
-  adminTabActive: {
-    background: '#b00020',
-    color: '#fff',
-  },
-
-  content: {
-    padding: 20,
-    background: '#fff',
-    borderRadius: 10,
-    boxShadow: '0 6px 18px rgba(0,0,0,0.1)',
-  },
-};
