@@ -1,62 +1,103 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
+import AdminPanel from '@/app/components/AdminPanel';
+import { Role } from '@/app/lib/users';
 
-export default function LoginPage() {
+const tabs = [
+  'Dashboard',
+  'Orders',
+  'Clients',
+  'Calendar',
+  'Reports',
+  'Messages',
+  'Warehouse',
+  'Finance',
+  'Analytics',
+  'Support',
+];
+
+export default function HomePage() {
   const router = useRouter();
+  const [role, setRole] = useState<Role | null>(null);
+  const [user, setUser] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('Dashboard');
 
-  // ✅ ИНИЦИАЛИЗАЦИЯ АДМИНА (ОДИН РАЗ)
   useEffect(() => {
-    initUsersIfNeeded();
-  }, []);
+    const r = localStorage.getItem('role') as Role | null;
+    const u = localStorage.getItem('user');
 
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleLogin = () => {
-    setError('');
-
-    const users = getUsers();
-
-    const user = users.find(
-      (u) => u.login === login && u.password === password
-    );
-
-    if (!user) {
-      setError('Неверный логин или пароль');
+    if (!r || !u) {
+      router.push('/login');
       return;
     }
 
-    localStorage.setItem('user', user.login);
-    localStorage.setItem('role', user.role);
+    setRole(r);
+    setUser(u);
+  }, [router]);
 
-    router.push('/');
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('role');
+    router.push('/login');
   };
+
+  if (!role) return null;
 
   return (
     <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={{ textAlign: 'center' }}>Login</h2>
+      {/* TOP BAR */}
+      <div style={styles.topBar}>
+        <div>
+          <div style={styles.userName}>{user}</div>
+          <div style={styles.userRole}>{role}</div>
+        </div>
 
-        <input
-          placeholder="Login"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-        />
+        <button onClick={handleLogout} style={styles.logout}>
+          Logout
+        </button>
+      </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+      {/* TABS */}
+      <div style={styles.tabs}>
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              ...styles.tab,
+              ...(activeTab === tab ? styles.tabActive : {}),
+            }}
+          >
+            {tab}
+          </button>
+        ))}
 
-        {error && <div style={styles.error}>{error}</div>}
+        {role === 'admin' && (
+          <button
+            onClick={() => setActiveTab('Admin')}
+            style={{
+              ...styles.tab,
+              ...styles.adminTab,
+              ...(activeTab === 'Admin' ? styles.adminTabActive : {}),
+            }}
+          >
+            Admin
+          </button>
+        )}
+      </div>
 
-        <button onClick={handleLogin}>Sign in</button>
+      {/* CONTENT */}
+      <div style={styles.content}>
+        {activeTab === 'Admin' && role === 'admin' ? (
+          <AdminPanel />
+        ) : (
+          <div style={styles.placeholder}>
+            <h3>{activeTab}</h3>
+            <p>Content will be here</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -67,27 +108,86 @@ export default function LoginPage() {
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
-    background: '#e6e6e6',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    fontFamily: 'Arial, sans-serif',
-  },
-
-  card: {
-    width: 320,
-    background: '#ffffff',
+    background: 'linear-gradient(180deg, #f4f5f7, #e9eaee)',
     padding: 24,
-    borderRadius: 14,
-    boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 12,
+    fontFamily: 'Inter, Arial, sans-serif',
   },
 
-  error: {
-    color: '#c62828',
+  topBar: {
+    background: '#fff',
+    borderRadius: 16,
+    padding: '16px 20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+  },
+
+  userName: {
+    fontWeight: 600,
+    fontSize: 16,
+  },
+
+  userRole: {
     fontSize: 13,
+    color: '#777',
+    textTransform: 'capitalize',
+  },
+
+  logout: {
+    padding: '8px 16px',
+    borderRadius: 12,
+    border: 'none',
+    background: '#ff4d4f',
+    color: '#fff',
+    fontWeight: 600,
+    cursor: 'pointer',
+  },
+
+  tabs: {
+    display: 'flex',
+    gap: 10,
+    flexWrap: 'wrap',
+    marginBottom: 20,
+  },
+
+  tab: {
+    padding: '10px 18px',
+    borderRadius: 14,
+    border: '1px solid #ddd',
+    background: '#fff',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.2s ease',
+  },
+
+  tabActive: {
+    background: '#111',
+    color: '#fff',
+    border: '1px solid #111',
+  },
+
+  adminTab: {
+    border: '1px solid #ff4d4f',
+    color: '#ff4d4f',
+  },
+
+  adminTabActive: {
+    background: '#ff4d4f',
+    color: '#fff',
+  },
+
+  content: {
+    background: '#fff',
+    borderRadius: 20,
+    padding: 24,
+    minHeight: 300,
+    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+  },
+
+  placeholder: {
     textAlign: 'center',
+    color: '#777',
   },
 };
