@@ -1,49 +1,90 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getServices } from '@/app/lib/services';
-import { getOrders, saveOrders, Order } from '@/app/lib/orders';
+import {
+  getServices,
+  initServicesIfNeeded,
+} from '@/app/lib/services';
+import {
+  getOrders,
+  saveOrders,
+  Order,
+} from '@/app/lib/orders';
+
+type OrderItem = {
+  name: string;
+  price: number;
+  qty: number;
+  total: number;
+};
 
 export default function OrdersPanel() {
-  const services = getServices();
-  const [items, setItems] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [items, setItems] = useState<OrderItem[]>([]);
   const [locked, setLocked] = useState(false);
 
+  // 🔹 ИНИЦИАЛИЗАЦИЯ
   useEffect(() => {
+    // 1. гарантируем, что services есть в localStorage
+    initServicesIfNeeded();
+    setServices(getServices());
+
+    // 2. подгружаем последний заказ (если есть)
     const orders = getOrders();
     if (orders.length > 0) {
       const last = orders[orders.length - 1];
-      setItems(last.items);
-      setLocked(last.locked);
+      setItems(last.items || []);
+      setLocked(!!last.locked);
     }
   }, []);
 
-  const add = (s: any) => {
+  const addService = (s: any) => {
     if (locked) return;
-    setItems([...items, { name: s.name, price: s.price, qty: 1, total: s.price }]);
+
+    setItems((prev) => [
+      ...prev,
+      {
+        name: s.name,
+        price: s.price,
+        qty: 1,
+        total: s.price,
+      },
+    ]);
   };
 
-  const update = (i: number, field: 'qty' | 'price', value: number) => {
+  const updateItem = (
+    index: number,
+    field: 'qty' | 'price',
+    value: number
+  ) => {
     if (locked) return;
+
     const copy = [...items];
-    copy[i][field] = value;
-    copy[i].total = copy[i].price * copy[i].qty;
+    copy[index][field] = value;
+    copy[index].total =
+      copy[index].price * copy[index].qty;
     setItems(copy);
   };
 
-  const total = items.reduce((s, i) => s + i.total, 0);
+  const total = items.reduce(
+    (sum, i) => sum + i.total,
+    0
+  );
 
-  const save = () => {
+  const saveOrder = () => {
     const orders = getOrders();
+
     const order: Order = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      createdBy: localStorage.getItem('user') || '',
+      createdBy:
+        localStorage.getItem('user') || '',
       role: localStorage.getItem('role') as any,
       items,
       total,
       locked: true,
     };
+
     saveOrders([...orders, order]);
     setLocked(true);
     alert('Order saved');
@@ -53,10 +94,23 @@ export default function OrdersPanel() {
     <div>
       <h3>Orders</h3>
 
+      {/* SERVICES */}
       {!locked && (
         <>
+          <h4>Services</h4>
+          {services.length === 0 && (
+            <div>No services found</div>
+          )}
+
           {services.map((s) => (
-            <button key={s.id} onClick={() => add(s)} style={{ marginRight: 6, marginBottom: 6 }}>
+            <button
+              key={s.id}
+              onClick={() => addService(s)}
+              style={{
+                marginRight: 8,
+                marginBottom: 8,
+              }}
+            >
               {s.name} (${s.price})
             </button>
           ))}
@@ -65,25 +119,77 @@ export default function OrdersPanel() {
 
       <hr />
 
-      {items.map((i, idx) => (
-        <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
-          <b style={{ width: 200 }}>{i.name}</b>
-          <input type="number" value={i.qty} disabled={locked} onChange={(e) => update(idx, 'qty', +e.target.value)} />
-          <input type="number" value={i.price} disabled={locked} onChange={(e) => update(idx, 'price', +e.target.value)} />
-          <span>= ${i.total}</span>
+      {/* ITEMS */}
+      {items.length === 0 && (
+        <div>No items yet</div>
+      )}
+
+      {items.map((item, i) => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            gap: 8,
+            alignItems: 'center',
+            marginBottom: 6,
+          }}
+        >
+          <strong style={{ width: 200 }}>
+            {item.name}
+          </strong>
+
+          <input
+            type="number"
+            value={item.qty}
+            disabled={locked}
+            onChange={(e) =>
+              updateItem(
+                i,
+                'qty',
+                Number(e.target.value)
+              )
+            }
+            style={{ width: 60 }}
+          />
+
+          <input
+            type="number"
+            value={item.price}
+            disabled={locked}
+            onChange={(e) =>
+              updateItem(
+                i,
+                'price',
+                Number(e.target.value)
+              )
+            }
+            style={{ width: 80 }}
+          />
+
+          <span>= ${item.total}</span>
         </div>
       ))}
 
       <hr />
-      <b>Total: ${total}</b>
+
+      <strong>Total: ${total}</strong>
 
       {!locked && items.length > 0 && (
         <div>
-          <button onClick={save} style={{ marginTop: 10 }}>Save Order</button>
+          <button
+            onClick={saveOrder}
+            style={{ marginTop: 10 }}
+          >
+            Save Order
+          </button>
         </div>
       )}
 
-      {locked && <div>🔒 Order locked</div>}
+      {locked && (
+        <div style={{ marginTop: 10 }}>
+          🔒 Order locked
+        </div>
+      )}
     </div>
   );
 }
