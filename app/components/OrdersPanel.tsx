@@ -9,41 +9,37 @@ import {
   getOrders,
   saveOrders,
   Order,
+  OrderItem,
 } from '@/app/lib/orders';
-
-type OrderItem = {
-  name: string;
-  price: number;
-  qty: number;
-  total: number;
-};
 
 export default function OrdersPanel() {
   const [services, setServices] = useState<any[]>([]);
   const [items, setItems] = useState<OrderItem[]>([]);
   const [locked, setLocked] = useState(false);
 
-  // 🔹 ИНИЦИАЛИЗАЦИЯ
+  // ================= INIT =================
   useEffect(() => {
-    // 1. гарантируем, что services есть в localStorage
+    // гарантируем, что сервисы существуют
     initServicesIfNeeded();
     setServices(getServices());
 
-    // 2. подгружаем последний заказ (если есть)
+    // подгружаем последний заказ (если есть)
     const orders = getOrders();
     if (orders.length > 0) {
       const last = orders[orders.length - 1];
-      setItems(last.items || []);
-      setLocked(!!last.locked);
+      setItems(last.items);
+      setLocked(last.locked);
     }
   }, []);
 
+  // ================= ADD SERVICE =================
   const addService = (s: any) => {
     if (locked) return;
 
     setItems((prev) => [
       ...prev,
       {
+        serviceId: s.id,        // ✅ КРИТИЧЕСКИ ВАЖНО
         name: s.name,
         price: s.price,
         qty: 1,
@@ -52,6 +48,7 @@ export default function OrdersPanel() {
     ]);
   };
 
+  // ================= UPDATE ITEM =================
   const updateItem = (
     index: number,
     field: 'qty' | 'price',
@@ -61,24 +58,24 @@ export default function OrdersPanel() {
 
     const copy = [...items];
     copy[index][field] = value;
-    copy[index].total =
-      copy[index].price * copy[index].qty;
+    copy[index].total = copy[index].price * copy[index].qty;
     setItems(copy);
   };
 
+  // ================= TOTAL =================
   const total = items.reduce(
     (sum, i) => sum + i.total,
     0
   );
 
+  // ================= SAVE ORDER =================
   const saveOrder = () => {
     const orders = getOrders();
 
     const order: Order = {
       id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
-      createdBy:
-        localStorage.getItem('user') || '',
+      createdBy: localStorage.getItem('user') || '',
       role: localStorage.getItem('role') as any,
       items,
       total,
@@ -90,6 +87,7 @@ export default function OrdersPanel() {
     alert('Order saved');
   };
 
+  // ================= RENDER =================
   return (
     <div>
       <h3>Orders</h3>
@@ -98,6 +96,7 @@ export default function OrdersPanel() {
       {!locked && (
         <>
           <h4>Services</h4>
+
           {services.length === 0 && (
             <div>No services found</div>
           )}
@@ -143,11 +142,7 @@ export default function OrdersPanel() {
             value={item.qty}
             disabled={locked}
             onChange={(e) =>
-              updateItem(
-                i,
-                'qty',
-                Number(e.target.value)
-              )
+              updateItem(i, 'qty', Number(e.target.value))
             }
             style={{ width: 60 }}
           />
@@ -157,11 +152,7 @@ export default function OrdersPanel() {
             value={item.price}
             disabled={locked}
             onChange={(e) =>
-              updateItem(
-                i,
-                'price',
-                Number(e.target.value)
-              )
+              updateItem(i, 'price', Number(e.target.value))
             }
             style={{ width: 80 }}
           />
