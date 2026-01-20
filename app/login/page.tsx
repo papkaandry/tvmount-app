@@ -1,103 +1,67 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import AdminPanel from '@/app/components/AdminPanel';
-import { Role } from '@/app/lib/users';
+import { getUsers, initUsersIfNeeded } from '@/app/lib/users';
 
-const tabs = [
-  'Dashboard',
-  'Orders',
-  'Clients',
-  'Calendar',
-  'Reports',
-  'Messages',
-  'Warehouse',
-  'Finance',
-  'Analytics',
-  'Support',
-];
-
-export default function HomePage() {
+export default function LoginPage() {
   const router = useRouter();
-  const [role, setRole] = useState<Role | null>(null);
-  const [user, setUser] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('Dashboard');
 
   useEffect(() => {
-    const r = localStorage.getItem('role') as Role | null;
-    const u = localStorage.getItem('user');
+    initUsersIfNeeded();
+  }, []);
 
-    if (!r || !u) {
-      router.push('/login');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = () => {
+    setError('');
+
+    const users = getUsers();
+    const user = users.find(
+      (u) => u.login === login && u.password === password
+    );
+
+    if (!user) {
+      setError('Invalid login or password');
       return;
     }
 
-    setRole(r);
-    setUser(u);
-  }, [router]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
-    router.push('/login');
+    localStorage.setItem('user', user.login);
+    localStorage.setItem('role', user.role);
+    router.push('/');
   };
-
-  if (!role) return null;
 
   return (
     <div style={styles.page}>
-      {/* TOP BAR */}
-      <div style={styles.topBar}>
-        <div>
-          <div style={styles.userName}>{user}</div>
-          <div style={styles.userRole}>{role}</div>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Sign in</h2>
+
+        <div style={styles.field}>
+          <input
+            style={styles.input}
+            placeholder="Login"
+            value={login}
+            onChange={(e) => setLogin(e.target.value)}
+          />
         </div>
 
-        <button onClick={handleLogout} style={styles.logout}>
-          Logout
+        <div style={styles.field}>
+          <input
+            style={styles.input}
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {error && <div style={styles.error}>{error}</div>}
+
+        <button style={styles.button} onClick={handleLogin}>
+          Login
         </button>
-      </div>
-
-      {/* TABS */}
-      <div style={styles.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              ...styles.tab,
-              ...(activeTab === tab ? styles.tabActive : {}),
-            }}
-          >
-            {tab}
-          </button>
-        ))}
-
-        {role === 'admin' && (
-          <button
-            onClick={() => setActiveTab('Admin')}
-            style={{
-              ...styles.tab,
-              ...styles.adminTab,
-              ...(activeTab === 'Admin' ? styles.adminTabActive : {}),
-            }}
-          >
-            Admin
-          </button>
-        )}
-      </div>
-
-      {/* CONTENT */}
-      <div style={styles.content}>
-        {activeTab === 'Admin' && role === 'admin' ? (
-          <AdminPanel />
-        ) : (
-          <div style={styles.placeholder}>
-            <h3>{activeTab}</h3>
-            <p>Content will be here</p>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -109,85 +73,62 @@ const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
     background: 'linear-gradient(180deg, #f4f5f7, #e9eaee)',
-    padding: 24,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     fontFamily: 'Inter, Arial, sans-serif',
   },
 
-  topBar: {
-    background: '#fff',
-    borderRadius: 16,
-    padding: '16px 20px',
+  card: {
+    width: 360,
+    background: '#ffffff',
+    padding: 32,
+    borderRadius: 24,
+    boxShadow: '0 20px 50px rgba(0,0,0,0.12)',
     display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
+    flexDirection: 'column',
+    gap: 18,
   },
 
-  userName: {
+  title: {
+    textAlign: 'center',
     fontWeight: 600,
-    fontSize: 16,
+    fontSize: 22,
+    marginBottom: 10,
   },
 
-  userRole: {
-    fontSize: 13,
-    color: '#777',
-    textTransform: 'capitalize',
-  },
-
-  logout: {
-    padding: '8px 16px',
-    borderRadius: 12,
-    border: 'none',
-    background: '#ff4d4f',
-    color: '#fff',
-    fontWeight: 600,
-    cursor: 'pointer',
-  },
-
-  tabs: {
+  field: {
     display: 'flex',
-    gap: 10,
-    flexWrap: 'wrap',
-    marginBottom: 20,
+    flexDirection: 'column',
   },
 
-  tab: {
-    padding: '10px 18px',
+  input: {
+    height: 46,
+    padding: '0 16px',
     borderRadius: 14,
     border: '1px solid #ddd',
-    background: '#fff',
+    fontSize: 15,
+    outline: 'none',
+    transition: 'border 0.2s ease',
+  },
+
+  button: {
+    marginTop: 10,
+    height: 48,
+    borderRadius: 16,
+    border: 'none',
+    background: '#111',
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 600,
     cursor: 'pointer',
-    fontWeight: 500,
     transition: 'all 0.2s ease',
   },
 
-  tabActive: {
-    background: '#111',
-    color: '#fff',
-    border: '1px solid #111',
-  },
-
-  adminTab: {
-    border: '1px solid #ff4d4f',
+  error: {
     color: '#ff4d4f',
-  },
-
-  adminTabActive: {
-    background: '#ff4d4f',
-    color: '#fff',
-  },
-
-  content: {
-    background: '#fff',
-    borderRadius: 20,
-    padding: 24,
-    minHeight: 300,
-    boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-  },
-
-  placeholder: {
+    fontSize: 13,
     textAlign: 'center',
-    color: '#777',
   },
 };
+
