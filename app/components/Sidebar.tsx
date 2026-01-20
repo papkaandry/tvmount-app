@@ -10,13 +10,16 @@ const commonTabs = [
   'Analytics',
   'Reports',
   'Finance',
-  'Support',
+  'Works', // ← было Support
   'Notifications',
   'Profile',
 ];
 
 export default function Sidebar() {
-  const role = localStorage.getItem('role') as Role;
+  const role =
+    typeof window !== 'undefined'
+      ? (localStorage.getItem('role') as Role)
+      : null;
 
   if (!role) return null;
 
